@@ -6,7 +6,7 @@
 </aside>
 
 [FairRaffle.io](http://fairraffle.io/) is a trustless, transparent on-chain raffle tool that allows you to run fair and verifiable raffles for any need.
-https://www.notion.so/fairraffle/3e81d24a92cb4dd5910efa107963af98?v=c76ca1ee8132406cafecb0d19ec53b2c
+
 ---
 
 ### Summary
