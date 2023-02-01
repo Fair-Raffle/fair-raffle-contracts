@@ -69,8 +69,8 @@ func receive_random_words{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_
     let (min_block_number) = min_block_number_storage.read();
     assert_le(min_block_number, current_block_number);
     
-    let (contract_address) = get_contract_address()
-    assert requestor_address = contract_address
+    let (contract_address) = get_contract_address();
+    assert requestor_address = contract_address;
     let random_word = random_words[0];
 
     return ();
@@ -78,5 +78,6 @@ func receive_random_words{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_
 
 @external
 func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    random: felt*)->(randomArr: felt*{    
+    random_len: felt, random: felt*)->(randomArr_len: felt, randomArr: felt*){    
+        return(randomArr_len=random_len, randomArr = random);
     }
