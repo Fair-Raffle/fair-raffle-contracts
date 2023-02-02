@@ -8,6 +8,8 @@
 from starkware.starknet.common.syscalls import get_block_number, get_caller_address, get_contract_address
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import (assert_le, Uint256, uint256_eq, uint256_add) 
+from starkware.cairo.common.alloc import alloc
+from starkware.starknet.common.messages import send_message_to_l1
 
 // Interfaces
 
@@ -20,6 +22,7 @@ namespace INFTContract {
 // Constants
 
 const EMPIRIC_RANDOM_ORACLE_ADDRESS = 0x681a206bfb74aa7436b3c5c20d7c9242bc41bc6471365ca9404e738ca8f1f3b;
+const L1_CONTRACT_ADDRESS = 0x681a206bfb74aa7436b3c5c20d7c9242bc41bc6471365ca9404e738ca8f1f3b;
 
 // Storage Variables
 
@@ -124,6 +127,8 @@ func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
     return();
 }
 
+// Helpers
+
 func _get_holder{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, contract_address: felt, total_supply: felt} (
     tokenId: Uint256
 ) {
@@ -137,4 +142,31 @@ func _get_holder{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     let (nextId, car) = uint256_add(tokenId, Uint256(1,0));
     return _get_holder(nextId);
 }
+
+// L1-L2 interaction
+
+func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+    raffleId: felt
+) {
+    let (message_payload: felt*) = alloc();
+    assert message_payload[0] = raffleId;
+
+    send_message_to_l1(
+        to_address=L1_CONTRACT_ADDRESS,
+        payload_size=1,
+        payload=message_payload,
+    );
+
+    // todo event
+
+    return();
+}
+
+@l1_handler
+func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+    from_address: felt, raffle_id: felt, random_number: Uint256
+) {
+    return();
+}
+
  
