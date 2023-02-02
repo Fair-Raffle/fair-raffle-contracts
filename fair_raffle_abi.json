@@ -1,0 +1,76 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "seed",
+                "type": "felt"
+            },
+            {
+                "name": "callback_address",
+                "type": "felt"
+            },
+            {
+                "name": "callback_gas_limit",
+                "type": "felt"
+            },
+            {
+                "name": "publish_delay",
+                "type": "felt"
+            },
+            {
+                "name": "num_words",
+                "type": "felt"
+            }
+        ],
+        "name": "request_my_randomness",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "requestor_address",
+                "type": "felt"
+            },
+            {
+                "name": "request_id",
+                "type": "felt"
+            },
+            {
+                "name": "random_words_len",
+                "type": "felt"
+            },
+            {
+                "name": "random_words",
+                "type": "felt*"
+            }
+        ],
+        "name": "receive_random_words",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "random_len",
+                "type": "felt"
+            },
+            {
+                "name": "random",
+                "type": "felt*"
+            }
+        ],
+        "name": "choose_random",
+        "outputs": [
+            {
+                "name": "randomArr_len",
+                "type": "felt"
+            },
+            {
+                "name": "randomArr",
+                "type": "felt*"
+            }
+        ],
+        "type": "function"
+    }
+]
