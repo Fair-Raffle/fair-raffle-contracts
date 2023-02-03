@@ -11,6 +11,9 @@ from starkware.cairo.common.uint256 import (assert_le, Uint256, uint256_eq, uint
 from starkware.cairo.common.alloc import alloc
 from starkware.starknet.common.messages import send_message_to_l1
 
+from starkware.cairo.common.hash import hash2
+from starkware.cairo.common.math_cmp import is_le_felts
+
 // Interfaces
 
 @contract_interface
@@ -42,6 +45,11 @@ func min_block_number_storage() -> (min_block_number: felt) {
 func id_to_holders(tokenId: Uint256) -> (holder: felt) {
 }
 
+@storage_var
+func random_choosens(index: felt) -> (random_choosens: felt) {
+}
+
+
 
 // Interfaces
 
@@ -69,6 +77,13 @@ func ownerOf{
     let (holder: felt) = id_to_holders.read(tokenId);
     return (holder=holder);
 }
+
+@view
+func random_choosens{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}(index: felt) -> ( nft
 
 //Externals
 
@@ -112,9 +127,14 @@ func receive_random_words{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_
 }
 
 @external
-func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    random_len: felt, random: felt*)->(randomArr_len: felt, randomArr: felt*){    
-        return(randomArr_len=random_len, randomArr = random);
+func make_Raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    random_len: felt, winner_amount: felt, random: felt)->(randomArr_len: felt, randomArr: felt*){
+        local randomArr: felt*;
+
+        
+        
+
+        return(randomArr_len=winner_amount, randomArr = randomArr);
 }
 
 @external
