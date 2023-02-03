@@ -36,10 +36,10 @@ func raffle_initiated(
 func raffle_winners(
     raffle_id: felt,
     winner_list_len: felt,
-    winner_list: felt*){}
-// Constants
+    winner_list: felt*, 
+){
+}
 
-const L1_CONTRACT_ADDRESS = 0xF7CAa030f986D5b79761B411fddF239D57b294Bb;
 
 // Enumarations
 // **************************
@@ -104,15 +104,33 @@ func random_test() -> (random: Uint256){
 func raffle_id_test() -> (random: felt){
 }
 
+@storage_var
+func l1_contract_address() -> (address: felt) {
+}
+
+
 //constructor
 
 @constructor
-func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l1_contract_address_: felt
+) {
+    l1_contract_address.write(l1_contract_address_);
     raffles_counter.write(0);
     return ();
 }
 
 // Views
+
+@view
+func get_l1_address{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}() -> (l1_address: felt){
+    let (l1_address) = l1_contract_address.read();
+    return(l1_address=l1_address);
+}
 
 @view
 func get_raffle_status{
@@ -181,6 +199,16 @@ func _get_holder{
     return _get_holder(nextId);
 }
 
+//Owner functions
+
+@external
+func change_l1_contract_address{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l1_address: felt,
+) {
+    l1_contract_address.write(l1_address);
+    return();
+}
+
 // TESTING
 
 @external
@@ -199,8 +227,10 @@ func init_raffle_random_call{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
     let (message_payload: felt*) = alloc();
     assert message_payload[0] = raffleId;
 
+    let (ctc_address: felt) = l1_contract_address.read();
+
     send_message_to_l1(
-        to_address=L1_CONTRACT_ADDRESS,
+        to_address=ctc_address,
         payload_size=1,
         payload=message_payload,
     );
@@ -217,47 +247,8 @@ func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     random_test.write(random_number);
     raffle_id_test.write(raffle_id);
 
-    pick_winner(raffle_id =  raffle_id, random_number = random_number);
+    //pick_winner(raffle_id =  raffle_id, random_number = random_number);
     return();
 }
 
 //Helpers
-
-func pick_winner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
-    raffle_id: felt, random_number: Uint256
-) {
-    let (raffle) = raffles.read(raffle_id);
-    let (attendees_len) = raffle.read(attendees_len);
-    let (winner_count) = raffle.read(winner_count);
-
-    let (t_div_winner_count, reference_point) = unsigned_div_rem(random_number.low, attendees_len );
-    let (t_div_winner_count_high, step_size) = unsigned_div_rem(random_number.high, attendees_len );
-
-    alloc_locals;
-    local winner_array: felt* ;
-    let (winner_array) = choose_random(0,winner_count, attendees_len, reference_point, step_size, winner_array);
-    raffle_winners.emit(raffle_id = raffle_id , winner_list = winner_array);
-    return();
-}
-
-func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
-    current_index: felt, winner_count: felt, attendees_len: felt, reference_point: felt, step_size: felt, winner_array : felt*, 
-){
-
-    if(winner_count==current_index){
-        return(winner_array=winner_array);
-    }
-
-    let (wont_be_used, new_element) = unsigned_div_rem( (reference_point+step_size), attendees_len );
-    winner_array[current_index] = new_element;
-
-    //Checking if we select the same person again
-    let (wont_be_used_too, check) = unsigned_div_rem( (reference_point+(step_size*current_index)), attendees_len );
-
-    if(check==0){ 
-        step_size = step_size+1;
-        current_index = current_index-1;
-    }
-    choose_random((current_index+1),winner_count, attendees_len, reference_point, step_size, winner_array);
-    return(winner_array=winner_array);
-}

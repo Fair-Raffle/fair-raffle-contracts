@@ -1,7 +1,12 @@
 [project]
 protostar-version = "0.9.1"
 lib-path = "lib"
+cairo-path = ["./lib/cairo_contracts/src", "./lib/cairopen_contracts/src"]
 
 [contracts]
-main = ["src/main.cairo"]
-fairRaffle = ["src/fairRaffle.cairo"]
+mock_nft = ["src/mock_nft.cairo"]
+fair_raffle = ["src/fair_raffle.cairo"]
+
+[profile.devnet.project]
+gateway-url = "http://127.0.0.1:5000/"
+chain-id = 1536727068981429685321

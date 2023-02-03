@@ -12,8 +12,8 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     event RequestFulfilled(uint256 requestId, uint256[] randomWords);
 
     // For goerli testnet
-    address constant starknetCoreContractAddress = 0xC8c46eB9CFBd2576FD4114fEa01B5C3fA004eDD3;
-    IStarknetCore constant starknet = IStarknetCore(starknetCoreContractAddress);
+    address starknetCoreContractAddress = 0xde29d060D45901Fb19ED6C6e959EB22d8626708e;
+    IStarknetCore starknet = IStarknetCore(starknetCoreContractAddress);
     uint256 l2ContractAddress;
     uint256 SELECTOR = 1088696223053132308773645305548840087074963352777964036583151858641713261517;
 
@@ -69,6 +69,11 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
 
     function changeL2ContractAddress (uint256 l2ContractAddress_) external onlyOwner {
         l2ContractAddress = l2ContractAddress_;
+    }
+
+    function changeStarknetCoreContract (address coreContract) external onlyOwner {
+        starknetCoreContractAddress = coreContract;
+        starknet = IStarknetCore(coreContract);
     }
 
     function initiateRaffle(uint256 raffleId) external {

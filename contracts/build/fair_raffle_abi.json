@@ -1,0 +1,178 @@
+[
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "attendees_len",
+                "type": "felt"
+            },
+            {
+                "name": "attendees",
+                "type": "felt*"
+            }
+        ],
+        "keys": [],
+        "name": "raffle_initiated",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "raffle_id",
+                "type": "felt"
+            },
+            {
+                "name": "winner_list_len",
+                "type": "felt"
+            },
+            {
+                "name": "winner_list",
+                "type": "felt*"
+            }
+        ],
+        "keys": [],
+        "name": "raffle_winners",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "l1_contract_address_",
+                "type": "felt"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "name": "raffle_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_raffle_status",
+        "outputs": [
+            {
+                "name": "status",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenId",
+                "type": "Uint256"
+            }
+        ],
+        "name": "ownerOf",
+        "outputs": [
+            {
+                "name": "holder",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "random_len",
+                "type": "felt"
+            },
+            {
+                "name": "random",
+                "type": "felt*"
+            }
+        ],
+        "name": "choose_random",
+        "outputs": [
+            {
+                "name": "randomArr_len",
+                "type": "felt"
+            },
+            {
+                "name": "randomArr",
+                "type": "felt*"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "contract_address",
+                "type": "felt"
+            },
+            {
+                "name": "total_supply",
+                "type": "felt"
+            }
+        ],
+        "name": "get_nft_holders_from_contract",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "l1_address",
+                "type": "felt"
+            }
+        ],
+        "name": "change_l1_contract_address",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "raffleId",
+                "type": "felt"
+            }
+        ],
+        "name": "test_l1_call",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "from_address",
+                "type": "felt"
+            },
+            {
+                "name": "raffle_id",
+                "type": "felt"
+            },
+            {
+                "name": "random_number",
+                "type": "Uint256"
+            }
+        ],
+        "name": "finalize_raffle",
+        "outputs": [],
+        "type": "l1_handler"
+    }
+]
