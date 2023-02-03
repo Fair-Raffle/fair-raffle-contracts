@@ -121,10 +121,11 @@ func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     contract_address: felt,
     total_supply: felt,
-) {
-    // let (firstId) = Uint(1,0) doesnt work why?
+) -> (holders_arr_len:felt, holders_arr: felt*) {
+    alloc_locals;
+    let (holders_arr: felt*) = alloc();
     _get_holder{contract_address=contract_address, total_supply=total_supply}(tokenId=Uint256(1,0));
-    return();
+    return(holders_arr_len=total_supply, holders_arr=holders_arr);
 }
 
 // Helpers
@@ -139,7 +140,8 @@ func _get_holder{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     }
     let (owner) = INFTContract.owner_of(contract_address=contract_address, tokenId=tokenId);
     id_to_holders.write(tokenId, owner);
-    let (nextId, car) = uint256_add(tokenId, Uint256(1,0));
+    let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
+    //assert []
     return _get_holder(nextId);
 }
 
