@@ -15,7 +15,7 @@ from starkware.starknet.common.messages import send_message_to_l1
 
 @contract_interface
 namespace INFTContract {
-    func owner_of(tokenId: Uint256) -> (owner:felt){
+    func ownerOf(tokenId: Uint256) -> (owner:felt){
     }
 }
 
@@ -129,11 +129,12 @@ func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     contract_address: felt,
     total_supply: felt,
-) -> () {  
+) -> () {
     alloc_locals;
     local holders: felt*;
     _get_holder{contract_address=contract_address, total_supply=total_supply, 
-        holders=holders}(tokenId=Uint256(1,0));
+        holders=holders
+        }(tokenId=Uint256(1,0));
     return();
 }
 
@@ -150,15 +151,15 @@ func _get_holder{
     tokenId: Uint256
 ) {
     let total_supply_uint = Uint256(total_supply, 0);
+    let (owner) = INFTContract.ownerOf(contract_address=contract_address, tokenId=tokenId);
+    id_to_holders.write(tokenId, owner);
+    let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
+    assert holders[nextId.low - 1] = owner;
     let (res) = uint256_eq(total_supply_uint, tokenId);
     if (res == 1) {
         raffle_initiated.emit(attendees_len=total_supply, attendees=holders);
         return();
     }
-    let (owner) = INFTContract.owner_of(contract_address=contract_address, tokenId=tokenId);
-    id_to_holders.write(tokenId, owner);
-    let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
-    assert holders[nextId.low - 1] = owner;
     return _get_holder(nextId);
 }
 
