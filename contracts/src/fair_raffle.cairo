@@ -30,7 +30,7 @@ func raffle_initiated(
 
 // Constants
 
-const L1_CONTRACT_ADDRESS = 0x02e67b27a2c006081779479faed680603981cbb7db2030ba6392be30a046734c;
+const L1_CONTRACT_ADDRESS = 0xF7CAa030f986D5b79761B411fddF239D57b294Bb;
 
 // Enumarations
 // **************************
@@ -87,6 +87,14 @@ func raffles(raffle_id: felt) -> (raffle: Raffle){
 func raffles_counter() -> (res: felt) {
 }
 
+@storage_var
+func random_test() -> (random: Uint256){
+}
+
+@storage_var
+func raffle_id_test() -> (random: felt){
+}
+
 //constructor
 
 @constructor
@@ -131,7 +139,7 @@ func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
     total_supply: felt,
 ) -> () {
     alloc_locals;
-    local holders: felt*;
+    let holders: felt* = alloc();
     _get_holder{contract_address=contract_address, total_supply=total_supply, 
         holders=holders
         }(tokenId=Uint256(1,0));
@@ -150,6 +158,7 @@ func _get_holder{
 } (
     tokenId: Uint256
 ) {
+    alloc_locals;
     let total_supply_uint = Uint256(total_supply, 0);
     let (owner) = INFTContract.ownerOf(contract_address=contract_address, tokenId=tokenId);
     id_to_holders.write(tokenId, owner);
@@ -161,6 +170,16 @@ func _get_holder{
         return();
     }
     return _get_holder(nextId);
+}
+
+// TESTING
+
+@external
+func test_l1_call{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+    raffleId: felt
+) {
+    init_raffle_random_call(raffleId=raffleId);
+    return();
 }
 
 // L1-L2 interaction
@@ -186,5 +205,7 @@ func init_raffle_random_call{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
     from_address: felt, raffle_id: felt, random_number: Uint256
 ) {
+    random_test.write(random_number);
+    raffle_id_test.write(raffle_id);
     return();
 }
