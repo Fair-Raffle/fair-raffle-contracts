@@ -22,7 +22,48 @@ namespace INFTContract {
 // Constants
 
 const EMPIRIC_RANDOM_ORACLE_ADDRESS = 0x681a206bfb74aa7436b3c5c20d7c9242bc41bc6471365ca9404e738ca8f1f3b;
-const L1_CONTRACT_ADDRESS = 0x681a206bfb74aa7436b3c5c20d7c9242bc41bc6471365ca9404e738ca8f1f3b;
+const L1_CONTRACT_ADDRESS = 0x02e67b27a2c006081779479faed680603981cbb7db2030ba6392be30a046734c;
+
+// Enumarations
+// **************************
+
+// For raffle status
+const INITIATED = 0;
+const WAITING_L1 = 1;
+const FINALIZED = 2;
+
+// For raffle type
+const CUSTOM_LIST = 0;
+const NFT_HOLDERS = 1;
+const TWITTER_API = 2;
+
+// **************************
+
+// Structs
+
+struct RaffleMaker {
+    address: felt
+    // todo add starknet-id integration
+}
+
+struct Raffle {
+    // Can be either INITIATED, WAITING_L1, or FINALIZED
+    status: felt,
+    // O by default
+    random_number: felt,
+    raffle_maker: RaffleMaker,
+    // Given by raffle make in the restriction that winner_count < len(attendees)
+    winner_count: felt,
+    // Time where attendees are certain
+    init_time: felt,
+    // Time when random_number arrives l2
+    final_time: felt,
+    // For NFT HOLDERS Raffle Type
+    attendees: felt*,
+    attendees_len: felt,
+    // For CUSTOM_LIST And TWITTER_API Raffle Type
+    ipfs_hash: felt
+}
 
 // Storage Variables
 
@@ -42,6 +83,14 @@ func min_block_number_storage() -> (min_block_number: felt) {
 func id_to_holders(tokenId: Uint256) -> (holder: felt) {
 }
 
+@storage_var
+func raffles(raffle_id: felt) -> (raffle: Raffle){
+}
+
+@storage_var
+func raffles_counter() -> (res: felt) {
+}
+
 
 // Interfaces
 
@@ -58,7 +107,35 @@ namespace IRandomness {
     }
 }
 
+//constructor
+
+@constructor
+func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+    raffles_counter.write(0);
+    return ();
+}
+
 // Views
+
+@view
+func get_raffle_status{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}(raffle_id: felt) -> (raffle: Raffle){
+    let (raffle) = raffles.read(raffle_id);
+    return(raffle=raffle);
+}
+
+@view
+func get_raffle_status{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}(raffle_id: felt) -> (status: felt){
+    let (raffle) = raffles.read(raffle_id);
+    return(status=raffle.status);
+}
 
 @view
 func ownerOf{
@@ -121,11 +198,10 @@ func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     contract_address: felt,
     total_supply: felt,
-) -> (holders_arr_len:felt, holders_arr: felt*) {
+) -> () {
     alloc_locals;
-    let (holders_arr: felt*) = alloc();
     _get_holder{contract_address=contract_address, total_supply=total_supply}(tokenId=Uint256(1,0));
-    return(holders_arr_len=total_supply, holders_arr=holders_arr);
+    return();
 }
 
 // Helpers
@@ -141,7 +217,6 @@ func _get_holder{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     let (owner) = INFTContract.owner_of(contract_address=contract_address, tokenId=tokenId);
     id_to_holders.write(tokenId, owner);
     let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
-    //assert []
     return _get_holder(nextId);
 }
 
@@ -170,5 +245,3 @@ func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 ) {
     return();
 }
-
- 
