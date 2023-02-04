@@ -229,16 +229,16 @@ func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     );
     raffles.write(counter, raffle_created);
     get_nft_holders_from_contract(contract_address, total_supply, counter);
-    raffle_initiated.emit(
-        counter,
-        NFT_HOLDERS,
-        total_supply,
-        contract_address,
-        0,
-        block_timestamp,
-        caller,
-        winner_count
-    );
+    //raffle_initiated.emit(
+    //    counter,
+    //    NFT_HOLDERS,
+    //    total_supply,
+    //    contract_address,
+    //    0,
+    //    block_timestamp,
+    //    caller,
+    //    winner_count
+    //);
     return();
 }
 
@@ -252,7 +252,7 @@ func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
     alloc_locals;
     let holders: felt* = alloc();
     _get_holder{contract_address=contract_address, total_supply=total_supply, 
-        holders=holders
+        //holders=holders
         }(raffleId=raffleId,tokenId=Uint256(1,0));
     return();
 }
@@ -265,7 +265,7 @@ func _get_holder{
     range_check_ptr, 
     contract_address: felt, 
     total_supply: felt,
-    holders: felt*,
+    //holders: felt*,
 } (
     raffleId: felt,
     tokenId: Uint256,
@@ -275,10 +275,9 @@ func _get_holder{
     let (owner) = INFTContract.ownerOf(contract_address=contract_address, tokenId=tokenId);
     id_to_holders.write(raffleId, tokenId, owner);
     let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
-    assert holders[nextId.low - 1] = owner;
+    //assert holders[nextId.low - 1] = owner;
     let (res) = uint256_eq(total_supply_uint, tokenId);
     if (res == 1) {
-        raffle_initiated.emit(attendees_len=total_supply, attendees=holders);
         return();
     }
     return _get_holder(raffleId, nextId);
@@ -331,7 +330,7 @@ func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 ) {
     random_test.write(random_number);
     raffle_id_test.write(raffle_id);
-    pick_winner(raffle_id =  raffle_id, random_number = Uint256(random_number, random_number));
+    //pick_winner(raffle_id =  raffle_id, random_number = Uint256(random_number, random_number));
     return();
 }
 

@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IStarknetCore.sol";
+import "./IStarknetCore.sol";
 
 contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     event RequestSent(uint256 requestId, uint32 numWords);
@@ -16,12 +16,13 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     IStarknetCore starknet = IStarknetCore(starknetCoreContractAddress);
     uint256 l2ContractAddress;
     uint256 SELECTOR = 1088696223053132308773645305548840087074963352777964036583151858641713261517;
-
+    uint256 constant messageFee = 1000000000000000000;
 
     struct RequestStatus {
         bool randomReturned; // if the callback is revoked by chainlik
         bool exists; // whether a requestId exists
         uint256[] randomWords;
+        uint256 raffleId;
     }
     mapping(uint256 => RequestStatus)
         public s_requests; /* requestId --> requestStatus */
@@ -39,7 +40,7 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     bytes32 keyHash =
         0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15;
 
-    uint32 callbackGasLimit = 100000;
+    uint32 callbackGasLimit = 1000000000;
 
     // waits 3 blocks for confirmation
     uint16 requestConfirmations = 3;
@@ -80,6 +81,7 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     }
 
     function initiateRaffle(uint256 raffleId) external {
+        require(address(this).balance >= messageFee, "Contract is not well funded");
         uint256[] memory payload = new uint256[](1);
         payload[0] = raffleId;
         // raffle maker cannot call it again as the message is consumed
@@ -87,7 +89,7 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
         requestRandomWords(raffleId);
     }
 
-    function sendRandomToL2(uint256 raffleId) external {
+    function sendRandomToL2(uint256 raffleId) internal {
         require(raffleIdToRequestId[raffleId] != 0, "Non existent or consumed raffle");
         uint256 reqId = raffleIdToRequestId[raffleId];
         require(s_requests[reqId].randomReturned == true, "No random words to send to l2");
@@ -95,7 +97,7 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
         uint256[] memory payload = new uint256[](2);
         payload[0] = raffleId;
         payload[1] = randomWords[0];
-        lastHash = starknet.sendMessageToL2(l2ContractAddress, SELECTOR, payload);
+        lastHash = starknet.sendMessageToL2{value: messageFee}(l2ContractAddress, SELECTOR, payload);
         raffleIdToRequestId[raffleId] = 0;
     }
 
@@ -103,10 +105,8 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
         uint256[] memory payload = new uint256[](2);
         payload[0] = raffleId;
         payload[1] = 111;
-        lastHash = starknet.sendMessageToL2{value: msg.value}(l2ContractAddress, SELECTOR, payload);
+        lastHash = starknet.sendMessageToL2{value: messageFee}(l2ContractAddress, SELECTOR, payload);
     }
-
-
 
     function requestRandomWords(uint256 raffleId)
         private
@@ -122,7 +122,8 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
         s_requests[requestId] = RequestStatus({
             randomWords: new uint256[](0),
             exists: true,
-            randomReturned: false
+            randomReturned: false,
+            raffleId: raffleId
         });
         raffleIdToRequestId[raffleId] = requestId;
         requestIds.push(requestId);
@@ -137,8 +138,9 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     ) internal override {
         require(s_requests[_requestId].exists, "request not found");
         s_requests[_requestId].randomReturned = true;
-        s_requests[_requestId].randomWords = _randomWords;
+        s_requests[_requestId].randomWords[0] = uint256(uint64(_randomWords[0]));
         emit RequestFulfilled(_requestId, _randomWords);
+        sendRandomToL2(s_requests[_requestId].raffleId);
     }
 
     function getRequestStatus(
@@ -148,4 +150,6 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
         RequestStatus memory request = s_requests[_requestId];
         return (request.randomReturned, request.randomWords);
     }
+
+    receive() external payable {}
 }
