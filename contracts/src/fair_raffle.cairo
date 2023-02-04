@@ -87,7 +87,7 @@ struct Raffle {
 // Storage Variables
 
 @storage_var
-func id_to_holders(tokenId: Uint256) -> (holder: felt) {
+func id_to_holders(raffleId: felt, tokenId: Uint256) -> (holder: felt) {
 }
 
 @storage_var
@@ -149,8 +149,8 @@ func ownerOf{
     syscall_ptr: felt*,
     pedersen_ptr: HashBuiltin*,
     range_check_ptr
-}(tokenId: Uint256) -> (holder: felt){
-    let (holder: felt) = id_to_holders.read(tokenId);
+}(raffleId: felt, tokenId: Uint256) -> (holder: felt){
+    let (holder: felt) = id_to_holders.read(raffleId, tokenId);
     return (holder=holder);
 }
 
@@ -215,12 +215,13 @@ func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     contract_address: felt,
     total_supply: felt,
+    raffleId: felt
 ) -> () {
-    alloc_locals;
-    let holders: felt* = alloc();
+    //alloc_locals;
+    //let holders: felt* = alloc();
     _get_holder{contract_address=contract_address, total_supply=total_supply, 
-        holders=holders
-        }(tokenId=Uint256(1,0));
+        //holders=holders
+        }(raffleId=raffleId,tokenId=Uint256(1,0));
     return();
 }
 
@@ -232,22 +233,23 @@ func _get_holder{
     range_check_ptr, 
     contract_address: felt, 
     total_supply: felt,
-    holders: felt*,
+    //holders: felt*,
 } (
-    tokenId: Uint256
+    raffleId: felt,
+    tokenId: Uint256,
 ) {
     alloc_locals;
     let total_supply_uint = Uint256(total_supply, 0);
     let (owner) = INFTContract.ownerOf(contract_address=contract_address, tokenId=tokenId);
-    id_to_holders.write(tokenId, owner);
+    id_to_holders.write(raffleId, tokenId, owner);
     let (nextId, carry) = uint256_add(tokenId, Uint256(1,0));
-    assert holders[nextId.low - 1] = owner;
+    //assert holders[nextId.low - 1] = owner;
     let (res) = uint256_eq(total_supply_uint, tokenId);
     if (res == 1) {
-        raffle_initiated.emit(attendees_len=total_supply, attendees=holders);
+        //raffle_initiated.emit(attendees_len=total_supply, attendees=holders);
         return();
     }
-    return _get_holder(nextId);
+    return _get_holder(raffleId, nextId);
 }
 
 //Owner functions
