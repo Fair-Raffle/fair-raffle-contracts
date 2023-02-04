@@ -79,6 +79,9 @@ struct Raffle {
     nft_contract_address: felt,
     // For CUSTOM_LIST And TWITTER_API Raffle Type
     ipfs_hash: felt,
+    // For NFT HOLDERS Raffle Type
+    attendees_list_id: felt,
+    attendees_len: felt,
 }
 
 // Storage Variables
@@ -199,6 +202,9 @@ func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         final_time=0,
         nft_contract_address=contract_address,
         ipfs_hash=0,
+        attendees_list_id=0,
+        attendees_len=total_supply,
+        
     );
 
     return();
@@ -291,45 +297,46 @@ func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 ) {
     random_test.write(random_number);
     raffle_id_test.write(raffle_id);
-    //pick_winner(raffle_id =  raffle_id, random_number = random_number);
+    pick_winner(raffle_id =  raffle_id, random_number = Uint256(random_number, random_number));
     return();
 }
 
 //Helpers
 
-//func pick_winner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
-//    raffle_id: felt, random_number: Uint256
-//) {
-//    let (raffle) = raffles.read(raffle_id);
-//
-//    let (t_div_winner_count, reference_point) = unsigned_div_rem(random_number.low, raffle.attendees_len );
-//    let (t_div_winner_count_high, step_size) = unsigned_div_rem(random_number.high, raffle.attendees_len );
-//
-//    alloc_locals;
-//    local winner_array: felt* ;
-//    let winner_array = choose_random(0,raffle.winner_count, raffle.attendees_len, reference_point, step_size, winner_array);
-//    raffle_winners.emit(raffle_id = raffle_id , winner_list = winner_array);
-//    return();
-//}
-//
-//func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
-//    current_index: felt, winner_count: felt, attendees_len: felt, reference_point: felt, step_size: felt, winner_array : felt*, 
-//){
-//
-//    if(winner_count==current_index){
-//        return(winner_array=winner_array);
-//    }
-//
-//    let (wont_be_used, new_element) = unsigned_div_rem( (reference_point+step_size), attendees_len );
-//    winner_array[current_index] = new_element;
-//
-//    //Checking if we select the same person again
-//    let (wont_be_used_too, check) = unsigned_div_rem( (reference_point+(step_size*current_index)), attendees_len );
-//
-//    if(check==0){ 
-//        step_size = step_size+1;
-//        current_index = current_index-1;
-//    }
-//    choose_random((current_index+1),winner_count, attendees_len, reference_point, step_size, winner_array);
-//    return(winner_array=winner_array);
-//} 
+func pick_winner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+    raffle_id: felt, random_number: Uint256
+) {
+    alloc_locals;
+    let (raffle) = raffles.read(raffle_id);
+    let attendees_len = raffle.attendees_len;
+    local winner_count: felt = raffle.winner_count;
+
+    let (t_div_winner_count, reference_point) = unsigned_div_rem(random_number.low, attendees_len );
+    let (t_div_winner_count_high, step_size) = unsigned_div_rem(random_number.high, attendees_len );
+
+    let (winner_array: felt*) = alloc();
+    choose_random(0,winner_count, attendees_len, reference_point, step_size, winner_array);
+    raffle_winners.emit(raffle_id = raffle_id ,winner_list_len = winner_count, winner_list = winner_array);
+    return();
+}
+
+func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+    current_index: felt, winner_count: felt, attendees_len: felt, reference_point: felt, step_size: felt, winner_array : felt*, 
+){
+
+    if(winner_count==current_index){
+        return();
+    }
+
+    let (wont_be_used, new_element) = unsigned_div_rem( (reference_point+step_size), attendees_len );
+    assert winner_array[current_index] = new_element;
+
+    //Checking if we select the same person again
+    let (wont_be_used_too, check) = unsigned_div_rem( (reference_point+(step_size*current_index)), attendees_len );
+
+    if(check==0){ 
+        step_size = step_size+1;
+        current_index = current_index-1;
+    }
+    return choose_random((current_index+1),winner_count, attendees_len, reference_point, step_size, winner_array);
+}
