@@ -27,8 +27,14 @@ namespace INFTContract {
 
 @event
 func raffle_initiated(
+    raffleId: felt,
+    raffleType: felt,
     attendees_len: felt,
-    attendees: felt*,
+    nft_contract_address: felt,
+    ipfs_hash: felt,
+    timestamp: felt,
+    made_by: felt,
+    winner_count: felt
 ) {
 }
 
@@ -110,6 +116,11 @@ func raffle_id_test() -> (raffle_id: felt){
 func l1_contract_address() -> (address: felt) {
 }
 
+@storage_var
+func results(raffleId: felt) -> (random_number: felt) {
+}
+
+
 
 //constructor
 
@@ -154,6 +165,16 @@ func ownerOf{
     return (holder=holder);
 }
 
+@view
+func get_reuslt{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}(raffleId: felt) -> (random_number: felt){
+    let (random_number: felt) = results.read(raffleId);
+    return (random_number=random_number);
+}
+
 // test views
 
 @view
@@ -184,8 +205,8 @@ func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     contract_address: felt,
     total_supply: felt,
     winner_count: felt,
-
 ) {
+    alloc_locals;
     let (counter: felt) = raffles_counter.read();
     raffles_counter.write(counter + 1);
     let (block_timestamp) = get_block_timestamp();
@@ -206,7 +227,18 @@ func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         attendees_len=total_supply,
         
     );
-
+    raffles.write(counter, raffle_created);
+    get_nft_holders_from_contract(contract_address, total_supply, counter);
+    raffle_initiated.emit(
+        counter,
+        NFT_HOLDERS,
+        total_supply,
+        contract_address,
+        0,
+        block_timestamp,
+        caller,
+        winner_count
+    );
     return();
 }
 
