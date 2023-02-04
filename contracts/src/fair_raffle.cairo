@@ -5,7 +5,7 @@
 
 %lang starknet
 
-from starkware.starknet.common.syscalls import get_block_number, get_caller_address, get_contract_address
+from starkware.starknet.common.syscalls import (get_caller_address, get_contract_address, get_block_timestamp)
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import (assert_le, Uint256, uint256_eq, uint256_add) 
 from starkware.cairo.common.alloc import alloc
@@ -64,7 +64,7 @@ struct RaffleMaker {
 }
 
 struct Raffle {
-    // Can be either INITIATED, WAITING_L1, or FINALIZED
+    // Can be either NOT_CREATED, WAITING_L1, or FINALIZED
     status: felt,
     // O by default
     random_number: felt,
@@ -76,8 +76,7 @@ struct Raffle {
     // Time when random_number arrives l2
     final_time: felt,
     // For NFT HOLDERS Raffle Type
-    attendees_list_id: felt,
-    attendees_len: felt,
+    nft_contract_address: felt,
     // For CUSTOM_LIST And TWITTER_API Raffle Type
     ipfs_hash: felt,
 }
@@ -97,11 +96,11 @@ func raffles_counter() -> (res: felt) {
 }
 
 @storage_var
-func random_test() -> (random: Uint256){
+func random_test() -> (random: felt){
 }
 
 @storage_var
-func raffle_id_test() -> (random: felt){
+func raffle_id_test() -> (raffle_id: felt){
 }
 
 @storage_var
@@ -152,14 +151,60 @@ func ownerOf{
     return (holder=holder);
 }
 
-//Externals
+// test views
 
-@external
-func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    random_len: felt, random: felt*)->(randomArr_len: felt, randomArr: felt*){    
-        return(randomArr_len=random_len, randomArr = random);
+@view
+func get_raffle_id_test{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}() -> (raffle_id: felt){
+    let (raffle_id) = raffle_id_test.read();
+    return(raffle_id=raffle_id);
 }
 
+@view
+func get_random_test{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    range_check_ptr
+}() -> (random: felt){
+    let (random) = random_test.read();
+    return(random=random);
+}
+
+//Externals
+
+// For raffle of nft holders
+@external
+func init_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    contract_address: felt,
+    total_supply: felt,
+    winner_count: felt,
+
+) {
+    let (counter: felt) = raffles_counter.read();
+    raffles_counter.write(counter + 1);
+    let (block_timestamp) = get_block_timestamp();
+    let (caller) = get_caller_address();
+    let raffle_maker = RaffleMaker(
+        address=caller,
+    );
+    let raffle_created = Raffle(
+        status=WAITING_L1,
+        random_number=0,
+        raffle_maker=raffle_maker,
+        winner_count=winner_count,
+        init_time=block_timestamp,
+        final_time=0,
+        nft_contract_address=contract_address,
+        ipfs_hash=0,
+    );
+
+    return();
+}
+
+// external for test purpose should be internal
 @external
 func get_nft_holders_from_contract{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     contract_address: felt,
@@ -242,13 +287,49 @@ func init_raffle_random_call{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 
 @l1_handler
 func finalize_raffle{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
-    from_address: felt, raffle_id: felt, random_number: Uint256
+    from_address: felt, raffle_id: felt, random_number: felt
 ) {
     random_test.write(random_number);
     raffle_id_test.write(raffle_id);
-
     //pick_winner(raffle_id =  raffle_id, random_number = random_number);
     return();
 }
 
 //Helpers
+
+//func pick_winner{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+//    raffle_id: felt, random_number: Uint256
+//) {
+//    let (raffle) = raffles.read(raffle_id);
+//
+//    let (t_div_winner_count, reference_point) = unsigned_div_rem(random_number.low, raffle.attendees_len );
+//    let (t_div_winner_count_high, step_size) = unsigned_div_rem(random_number.high, raffle.attendees_len );
+//
+//    alloc_locals;
+//    local winner_array: felt* ;
+//    let winner_array = choose_random(0,raffle.winner_count, raffle.attendees_len, reference_point, step_size, winner_array);
+//    raffle_winners.emit(raffle_id = raffle_id , winner_list = winner_array);
+//    return();
+//}
+//
+//func choose_random{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr} (
+//    current_index: felt, winner_count: felt, attendees_len: felt, reference_point: felt, step_size: felt, winner_array : felt*, 
+//){
+//
+//    if(winner_count==current_index){
+//        return(winner_array=winner_array);
+//    }
+//
+//    let (wont_be_used, new_element) = unsigned_div_rem( (reference_point+step_size), attendees_len );
+//    winner_array[current_index] = new_element;
+//
+//    //Checking if we select the same person again
+//    let (wont_be_used_too, check) = unsigned_div_rem( (reference_point+(step_size*current_index)), attendees_len );
+//
+//    if(check==0){ 
+//        step_size = step_size+1;
+//        current_index = current_index-1;
+//    }
+//    choose_random((current_index+1),winner_count, attendees_len, reference_point, step_size, winner_array);
+//    return(winner_array=winner_array);
+//} 

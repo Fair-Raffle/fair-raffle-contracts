@@ -47,6 +47,9 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     // Only one number is enough for our algorithm
     uint32 numWords = 1;
 
+    // TEST
+    bytes32 public lastHash;
+
     /**
      * HARDCODED FOR GOERLI
      * COORDINATOR: 0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D
@@ -87,14 +90,23 @@ contract RaffleRandomClient is VRFConsumerBaseV2, ConfirmedOwner {
     function sendRandomToL2(uint256 raffleId) external {
         require(raffleIdToRequestId[raffleId] != 0, "Non existent or consumed raffle");
         uint256 reqId = raffleIdToRequestId[raffleId];
-        require(s_requests[raffleId].randomReturned == true, "No random words to send to l2");
+        require(s_requests[reqId].randomReturned == true, "No random words to send to l2");
         uint256[] memory randomWords = s_requests[reqId].randomWords;
         uint256[] memory payload = new uint256[](2);
         payload[0] = raffleId;
         payload[1] = randomWords[0];
-        starknet.sendMessageToL2(l2ContractAddress, SELECTOR, payload);
+        lastHash = starknet.sendMessageToL2(l2ContractAddress, SELECTOR, payload);
         raffleIdToRequestId[raffleId] = 0;
-    } 
+    }
+
+    function sendRandomToL2Test(uint256 raffleId) external payable {
+        uint256[] memory payload = new uint256[](2);
+        payload[0] = raffleId;
+        payload[1] = 111;
+        lastHash = starknet.sendMessageToL2{value: msg.value}(l2ContractAddress, SELECTOR, payload);
+    }
+
+
 
     function requestRandomWords(uint256 raffleId)
         private
