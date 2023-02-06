@@ -1,7 +1,7 @@
 # FairRaffle.io
 
 <aside>
-💡 Fair Raffle is an open-source tool for community.
+💡 Fair Raffle is an open-source tool for the community.
 
 </aside>
 
@@ -23,14 +23,14 @@ FairRaffle.io is a trustless, transparent on-chain raffle tool that allows you t
 
 ## **Problem:**
 
-Raffles and lotteries are a popular way to engage customers, but traditional raffles are often not transparent or trustworthy.  
+Raffles and lotteries are popular ways to engage customers, but traditional raffles are often not transparent or trustworthy.  
 
 **Current Raffle Tools are:**
 
 
 **No-Open Source Tools**
 
-Most raffle tools do not disclose how they work or provide proof that their selection process is truly random. This lack of transparency can lead to mistrust and skepticism among users.how they truly random.
+Most raffle tools do not disclose how they work or provide proof that their selection process is truly random. This lack of transparency can lead to mistrust and skepticism among users. How random are they really?
 
 
 **Not Accountable!**
@@ -78,14 +78,14 @@ Sample UI illustration For a NFT Raffles - For Early Starkers NFTs - Design only
 Before the start NFT collection’s contract should be registered. 
 
 1. The Raffle Creator announces their public keys on verified social medias.
-2. Raffle Creator Select the NFT Collection for make an airdrop and enters the number of winners.
+2. Raffle Creator Select the NFT Collection to make an airdrop and enters the number of winners.
 3. The Fair Raffle platform takes a snapshot of the current NFT project holders (via contract) and uses a verifiable random function (VRF) to randomly select the winners.
-4. Fair Raffle asks for VRF and use the incoming number in Random Algorithm.
-5. All the entries are stored in on-chainly such as raffle maker’s public key, attendees (in NFT), expecting numbers, VRF result and winner numbers. 
+4. Fair Raffle asks for VRF and uses the incoming number in Random Algorithm.
+5. All the entries are stored on-chain such as raffle maker’s public key, attendees (in NFT), expecting numbers, VRF result and winner numbers. 
 
 By the result, any auditors can check the raffle results by just searching the public key of raffle maker. 
 
-> No event can be deleted on blockchain. Any disputes or fraud situations will be observable by anyone.
+> No event can be deleted on the blockchain. Any disputes or fraud situations will be observable by anyone.
 > 
 
  
@@ -118,7 +118,7 @@ With [FairRaffle.io](http://fairraffle.io/), you can run raffles for any purpose
 ⚠️ **Note**
 While making raffle with the lists do not share any personal data. You can consider to hash sensitive data when creating a raffle with a list with your public key.
 
-Different solutions can also presented.
+Different solutions can also be presented.
 
 [About Hashing](https://www.notion.so/About-Hashing-0b18332092194dec82b477186c7c6499)
 
@@ -133,7 +133,7 @@ Our tool collects Twitter data through the Twitter API.
 <aside>
 💡 **Note**
 In that part, FairRaffle’s open-source app collects the data and make it a NFT. 
-However, if there is a mistake on thread, raffle maker can detect it or deny it before the finalizing the raffle.
+However, if there is a mistake on thread, raffle maker can detect it or deny it before finalizing the raffle.
 
 </aside>
 
@@ -170,6 +170,6 @@ The current most important needs for the Fair Raffle project include:
 
 ## Current Team
 
-We welcome any contributer!
+We welcome any contributor!
 
 ---
