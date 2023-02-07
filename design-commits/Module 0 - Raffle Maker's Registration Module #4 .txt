@@ -1,0 +1,17 @@
+Issue: Module 0 : Raffle Maker's Registration Module #4
+
+https://github.com/Fair-Raffle/raffle-design/issues/4
+
+https://github.com/Fair-Raffle/raffle-design/commit/e5a58c3eb25c2084133f7459413a1be63a1d9182
+
+
+In this design, raffle maker should register for the profile and define the current active & delagated wallets
+
+materials needs to placed:
+
+twitter & starknet ID integration
+NFT deployer tools : raffle delegator, adding image, adding current supply, adding website and twitter.
+twitter or starknet id selection
+
+
+https://www.sketch.com/s/2854ab29-76c2-4fa5-8e28-1821fda1fde2/v/n98Y5W/p/BC5D20A6-3517-4257-8D5D-D159B1F155D7/canvas?posX=-1668.6105375240163&posY=-685.7721306875125&zoom=0.6096035242080688
