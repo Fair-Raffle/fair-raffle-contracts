@@ -1,4 +1,4 @@
-Issue: Module 0 : Raffle Maker's Registration Module #4
+Issue: Module 0 : Raffle Maker's Registration Module
 
 https://github.com/Fair-Raffle/raffle-design/issues/4
 
