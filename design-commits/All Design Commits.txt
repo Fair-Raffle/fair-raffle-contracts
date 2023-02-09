@@ -1,0 +1,38 @@
+Wallet Integration Modal	
+https://github.com/Fair-Raffle/raffle-design/commit/232b1070e6b2b9a332b61659db031095d306028e
+
+
+Module 0 : HomePage Design & Describing Raffle Tool	
+https://github.com/Fair-Raffle/raffle-design/commit/32d58e2ce3bd2bb2336747fd8392064633927362
+
+
+Module 1: Enabling Users To Search Past Raffles:	
+https://github.com/Fair-Raffle/raffle-design/issues/1
+
+
+Module 1 : Enabling Anyone to make any Raffle with CSV	
+https://github.com/Fair-Raffle/raffle-design/commit/83cf443a82a415e7cd6d637e8c80e19bf67bc2ee
+
+
+Module 1: Screens After the Initating the Raffle	
+https://github.com/Fair-Raffle/raffle-design/commit/f8800d70d42f95038437f69d66c92446b8781e67
+
+
+Module 2: Registering NFT Collection	
+https://github.com/Fair-Raffle/raffle-design/commit/4165117f7e28373ae8df8166d7cdea4daaae3f11
+
+
+Module 2: NFT Collection Raffles (End User View)	
+https://github.com/Fair-Raffle/raffle-design/commit/c106436c0bf111aba4fc69b38bd4ba074359dd19
+
+
+
+Total Workload: 4 days + 1 Days (For Other Contributions I sent)
+
+
+----- IN OTHER CONTRIBUTION PR: -----   
+Module 0 : Raffle Maker's Registration Module 
+https://github.com/Fair-Raffle/raffle-design/commit/e5a58c3eb25c2084133f7459413a1be63a1d9182
+
+https://github.com/Fair-Raffle/fair-raffle-contracts/pull/11
+
