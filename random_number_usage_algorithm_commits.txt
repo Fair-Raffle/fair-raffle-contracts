@@ -1,0 +1,20 @@
+These are the commits on main branch
+
+Initial Project commits includes contract and readme
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/283b8de28e3a2d0043a83fab7bed1dc61ecfaed9
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/0816a7a4aadb06d86fd46eaf3a590c339017d9ee
+
+Contract Update
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/1145fccb1aaa3befda1fa7f260f892d92a8d6fad
+
+Raffle Logic
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/a4974871eea4381967a763185f00460250a1f7fe
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/31b76cf15e9edd114ef608c980977b1605b45075
+
+
+These are the commits on raffle_logic branch
+
+Random Selection algorithm implemented
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/79002ae4846bf84a94f8f4640a43d1c77e9280f0
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/8126068d7752f6b5d18a2191deb7110b5d57d1e0
+https://github.com/Fair-Raffle/fair-raffle-contracts/commit/d5cc92a1d1746209229dd1b86494e759d204c9e9
