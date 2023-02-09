@@ -18,3 +18,5 @@ Random Selection algorithm implemented
 https://github.com/Fair-Raffle/fair-raffle-contracts/commit/79002ae4846bf84a94f8f4640a43d1c77e9280f0
 https://github.com/Fair-Raffle/fair-raffle-contracts/commit/8126068d7752f6b5d18a2191deb7110b5d57d1e0
 https://github.com/Fair-Raffle/fair-raffle-contracts/commit/d5cc92a1d1746209229dd1b86494e759d204c9e9
+
+Total Workload: 4 days
