@@ -1,0 +1,42 @@
+- I completed the website contents:
+
+https://fairraffle.notion.site/fairraffle/FairRaffle-Website-content-82245e076dc84caa84c95101df3d0d8c
+
+
+- I researched how to get Twitter API and applied to Twitter API with the following application form: 
+
+How will you use the Twitter API or Twitter Data?
+Currently, we are building a common good for people who want to make a trustless raffle tool named Fair Raffle on Starknet blockchain.
+We need Twitter API for some reasons such as:
+
+To log in with Twitter to our dApp
+To control tasks of our users’ participants like RT, follow, and comment
+
+
+- I created a Twitter account for Fair Raffle. I designed a Twitter banner. Here is the account: https://twitter.com/FairRaffle_io
+
+
+-I wrote 3 samples of the announcement Tweets:
+
+1) version for a user who registered & selected Twitter name:
+
+"@{RaffleMaker} has just created a raffle from FairRaffle.io
+Raffle Name: {}
+
+Raffle Proof {link}
+built on Starknet
+
+2) version for a user who registered with a collection name:
+
+{NFT-Collection Name} has just created a raffle from FairRaffle.io
+Raffle Name: {}
+
+Raffle Proof {link}
+built on Starknet
+
+3) version for a user only with a public key:
+
+Raffle for {RaffleName} just made on FairRaffle.io
+
+Raffle Proof {link}
+built on StarkNet
